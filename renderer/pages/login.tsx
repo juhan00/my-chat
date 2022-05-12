@@ -10,7 +10,8 @@ function Home() {
   const [loginPassword, setLoginPassword] = useState("");
 
   //로그인
-  const userLogin = async () => {
+  const userLogin = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     try {
       const data = await signInWithEmailAndPassword(
         auth,
@@ -29,20 +30,22 @@ function Home() {
         <title>로그인</title>
       </Head>
       <div>
-        <input
-          placeholder="e-mail"
-          onChange={(e) => {
-            setLoginEmail(e.target.value);
-          }}
-        />
-        <input
-          type="password"
-          placeholder="password"
-          onChange={(e) => {
-            setLoginPassword(e.target.value);
-          }}
-        />
-        <button onClick={userLogin}>로그인</button>
+        <form onSubmit={userLogin}>
+          <input
+            placeholder="e-mail"
+            onChange={(e) => {
+              setLoginEmail(e.target.value);
+            }}
+          />
+          <input
+            type="password"
+            placeholder="password"
+            onChange={(e) => {
+              setLoginPassword(e.target.value);
+            }}
+          />
+          <button type="submit">로그인</button>
+        </form>
 
         <Link href="/login">
           <a>로그인</a>

@@ -29,20 +29,22 @@ function Home() {
         <title>회원가입</title>
       </Head>
       <div>
-        <input
-          placeholder="e-mail"
-          onChange={(e) => {
-            setJoinEmail(e.target.value);
-          }}
-        />
-        <input
-          type="password"
-          placeholder="password"
-          onChange={(e) => {
-            setJoinPassword(e.target.value);
-          }}
-        />
-        <button onClick={userJoin}>회원가입</button>
+        <form onSubmit={userJoin}>
+          <input
+            placeholder="e-mail"
+            onChange={(e) => {
+              setJoinEmail(e.target.value);
+            }}
+          />
+          <input
+            type="password"
+            placeholder="password"
+            onChange={(e) => {
+              setJoinPassword(e.target.value);
+            }}
+          />
+          <button type="submit">회원가입</button>
+        </form>
 
         <Link href="/login">
           <a>로그인</a>
