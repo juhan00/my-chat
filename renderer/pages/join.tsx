@@ -28,7 +28,7 @@ function Home() {
 
       const messageListRef = ref(db, `Users/${userUid}`);
       // const newPostRef = push(messageListRef);
-      set(messageListRef, {
+      await set(messageListRef, {
         uid: auth.currentUser.uid,
         email: userEmail,
         nickname: userName,

@@ -3,6 +3,7 @@ import type { AppProps } from "next/app";
 import Head from "next/head";
 import { auth } from "../firebase-config";
 import { UserContext } from "../context/UserContext";
+import { stringify } from "querystring";
 
 function MyApp({ Component, pageProps }: AppProps) {
   const [authState, setAuthState] = useState({});

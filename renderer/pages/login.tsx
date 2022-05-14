@@ -1,13 +1,16 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import Head from "next/head";
 import Link from "next/link";
 import Router from "next/router";
-import { signInWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
+import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../firebase-config";
+import { UserContext } from "../context/UserContext";
+import { getDatabase, ref, onValue } from "firebase/database";
 
 function Home() {
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
+  const { userState, setUserState } = useContext(UserContext);
 
   //로그인
   const userLogin = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -18,6 +21,20 @@ function Home() {
         loginEmail,
         loginPassword
       );
+
+      //user 정보 받아오기
+      const db = getDatabase();
+      const dbRef = ref(db, `Users/${data.user.uid}`);
+
+      onValue(dbRef, (snapshot) => {
+        const userInfo = snapshot.val();
+        setUserState(userInfo);
+      });
+
+      // setUserState({uid:data.user.uid, email:data.user.email, nickname:});
+
+      // console.log(data);
+
       // console.log(data);
       Router.push("/chat");
     } catch (error) {

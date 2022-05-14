@@ -13,11 +13,11 @@ import LogOut from "../components/LogOut";
 import { UserContext } from "../context/UserContext";
 
 function Home() {
-  const userAuth = useContext(UserContext).authState;
+  const { authState } = useContext(UserContext);
 
   useEffect(() => {
-    console.log(userAuth);
-    !userAuth && Router.push("/login");
+    console.log(authState);
+    !authState && Router.push("/login");
     // if (userAuth) {
 
     //   if (userName) {
@@ -41,14 +41,14 @@ function Home() {
     // } else {
     //   Router.push("/login");
     // }
-  }, [userAuth]);
+  }, [authState]);
 
   return (
     <React.Fragment>
       <Head>
         <title>Home - Nextron (with-typescript-emotion)</title>
       </Head>
-      {userAuth && <LogOut />}
+      {authState && <LogOut />}
       <Link href="/login">
         <a>로그인</a>
       </Link>

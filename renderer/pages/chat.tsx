@@ -1,11 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { getDatabase, ref, push, set, onValue } from "firebase/database";
 import { auth } from "../firebase-config";
+import { UserContext } from "../context/UserContext";
 
 function chat() {
   const [sendMessage, setSendMessage] = useState("");
   const [message, setMessage] = useState(null);
+  const { userState } = useContext(UserContext);
 
+  console.log(userState);
   //message 보내기
   const handleSendMessage = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
