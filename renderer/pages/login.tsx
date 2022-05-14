@@ -5,7 +5,7 @@ import Router from "next/router";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../firebase-config";
 import { UserContext } from "../context/UserContext";
-import { getDatabase, ref, onValue } from "firebase/database";
+import { getDatabase, ref, get } from "firebase/database";
 
 function Home() {
   const [loginEmail, setLoginEmail] = useState("");
@@ -26,10 +26,18 @@ function Home() {
       const db = getDatabase();
       const dbRef = ref(db, `Users/${data.user.uid}`);
 
-      onValue(dbRef, (snapshot) => {
-        const userInfo = snapshot.val();
-        setUserState(userInfo);
+      const getUserInfo = await get(dbRef);
+      const userInfo = getUserInfo.val();
+      // console.log(userInfo.val(), "userInfo");
+      setUserState({
+        uid: userInfo.uid,
+        email: userInfo.email,
+        nickname: userInfo.nickname,
       });
+      // onValue(dbRef, (snapshot) => {
+      //   const userInfo = snapshot.val();
+      //   setUserState(userInfo);
+      // });
 
       // setUserState({uid:data.user.uid, email:data.user.email, nickname:});
 

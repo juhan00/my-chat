@@ -8,7 +8,7 @@ function chat() {
   const [message, setMessage] = useState(null);
   const { userState } = useContext(UserContext);
 
-  console.log(userState);
+  console.log(userState, "chat");
   //message 보내기
   const handleSendMessage = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
