@@ -44,7 +44,7 @@ function Home() {
       // console.log(data);
 
       // console.log(data);
-      Router.push("/chat");
+      Router.push("/users");
     } catch (error) {
       console.log(error.message);
     }

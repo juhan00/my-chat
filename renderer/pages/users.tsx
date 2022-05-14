@@ -1,7 +1,8 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Head from "next/head";
 import Router from "next/router";
 import Link from "next/link";
+import { getDatabase, ref, onValue } from "firebase/database";
 // import { getDatabase, ref, push, set } from "firebase/database";
 // import { auth } from "../firebase-config";
 // import { BasicCard } from "../components/BasicCard";
@@ -14,34 +15,41 @@ import { UserContext } from "../context/UserContext";
 
 function Home() {
   const { authState } = useContext(UserContext);
+  const [users, setUsers] = useState([]);
 
+  console.log(users);
+  //로그인 체크
   useEffect(() => {
     console.log(authState);
     !authState && Router.push("/login");
-    // if (userAuth) {
-
-    //   if (userName) {
-    //     console.log("userName ok");
-    //     const userEmail = auth.currentUser.email;
-    //     const userUid = auth.currentUser.uid;
-    //     const db = getDatabase();
-
-    //     const messageListRef = ref(db, `Users/${userUid}`);
-    //     // const newPostRef = push(messageListRef);
-    //     set(messageListRef, {
-    //       email: userEmail,
-    //       name: userName,
-    //       uid: auth.currentUser.uid,
-    //     });
-
-    //     console.log("Users 쓰기성공");
-    //   }
-    //   // console.log(userName);
-    //   // console.log(userInfo["uid"]);
-    // } else {
-    //   Router.push("/login");
-    // }
   }, [authState]);
+
+  //chat list 받기
+  useEffect(() => {
+    const db = getDatabase();
+    const dbRef = ref(db, "Users");
+
+    onValue(dbRef, (snapshot) => {
+      const users = snapshot.val();
+      const arrKey = Object.keys(snapshot.val());
+      const arrUsers = [];
+      for (let i = 0; i < arrKey.length; i++) {
+        arrUsers.push({
+          uid: users[arrKey[i]].uid,
+          email: users[arrKey[i]].email,
+          nickname: users[arrKey[i]].nickname,
+        });
+      }
+      setUsers(arrUsers);
+    });
+  }, []);
+
+  const goToChatList = (uid: string) => {
+    Router.push({
+      pathname: "/chat",
+      query: uid,
+    });
+  };
 
   return (
     <React.Fragment>
@@ -58,6 +66,15 @@ function Home() {
       <Link href="/home">
         <a>홈</a>
       </Link>
+
+      <ul>
+        {users?.map((item) => (
+          <li onClick={() => goToChatList(item.uid)} key={item.uid}>
+            <p>{item.nickname}</p>
+            <p>{item.email}</p>
+          </li>
+        ))}
+      </ul>
     </React.Fragment>
   );
 }

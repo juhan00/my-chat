@@ -34,7 +34,7 @@ function Home() {
         nickname: userName,
       });
 
-      Router.push("/home");
+      Router.push("/users");
       // console.log(data, "join");
       // Router.push({
       //   pathname: "/home",

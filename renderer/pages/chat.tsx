@@ -5,8 +5,29 @@ import { UserContext } from "../context/UserContext";
 
 function chat() {
   const [sendMessage, setSendMessage] = useState("");
-  const [message, setMessage] = useState(null);
+  const [message, setMessage] = useState([]);
   const { userState } = useContext(UserContext);
+
+  //message
+  useEffect(() => {
+    const db = getDatabase();
+    const dbRef = ref(db, "Messages/-N1t8AVJvIhBkh85aCGO");
+
+    onValue(dbRef, (snapshot) => {
+      const messages = snapshot.val();
+      const arrKey = Object.keys(snapshot.val());
+      const arrMessage = [];
+      for (let i = 0; i < arrKey.length; i++) {
+        arrMessage.push({
+          message: messages[arrKey[i]].message,
+          nickname: messages[arrKey[i]].nickname,
+          timestamp: messages[arrKey[i]].timestamp,
+        });
+      }
+      setMessage(arrMessage);
+      console.log(arrMessage);
+    });
+  }, []);
 
   console.log(userState, "chat");
   //message 보내기
@@ -19,7 +40,8 @@ function chat() {
     set(newPostRef, {
       message: sendMessage,
       timestamp: Date.now(),
-      uid: auth.currentUser.uid,
+      uid: userState.uid,
+      nickname: userState.nickname,
     });
 
     console.log("쓰기성공");
@@ -44,26 +66,13 @@ function chat() {
     // }
   };
 
-  //message 받기
-  useEffect(() => {
-    const db = getDatabase();
-    const dbRef = ref(db, "Messages/-N1t8AVJvIhBkh85aCGO");
-
-    onValue(dbRef, (snapshot) => {
-      const messages = snapshot.val();
-      const arrKey = Object.keys(snapshot.val());
-      const arrMessage = [];
-      for (let i = 0; i < arrKey.length; i++) {
-        arrMessage.push(messages[arrKey[i]].message);
-      }
-      setMessage(arrMessage);
-      console.log(arrMessage);
-    });
-  }, []);
-
   return (
     <div>
-      {/* {message.map(item => <div>{item.}</div>)} */}
+      {message?.map((item) => (
+        <div
+          key={item.timestamp}
+        >{`메시지:${item.message}, 닉네임:${item.nickname}, 타임:${item.timestamp}`}</div>
+      ))}
       <form onSubmit={handleSendMessage}>
         <input
           placeholder="내용을 입력하세요."
