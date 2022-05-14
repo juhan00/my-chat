@@ -19,7 +19,7 @@ function Home() {
         loginPassword
       );
       // console.log(data);
-      Router.push("/home");
+      Router.push("/chat");
     } catch (error) {
       console.log(error.message);
     }

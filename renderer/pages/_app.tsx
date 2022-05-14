@@ -2,14 +2,15 @@ import React, { useEffect, useState } from "react";
 import type { AppProps } from "next/app";
 import Head from "next/head";
 import { auth } from "../firebase-config";
-import { AuthContext } from "../context/authContext";
+import { UserContext } from "../context/UserContext";
 
 function MyApp({ Component, pageProps }: AppProps) {
-  const [userInfo, setUserInfo] = useState(null);
+  const [authState, setAuthState] = useState({});
+  const [userState, setUserState] = useState({});
 
   useEffect(() => {
-    const subscribe = auth.onAuthStateChanged((fbUser) => {
-      setUserInfo(fbUser);
+    const subscribe = auth.onAuthStateChanged((data) => {
+      setAuthState(data);
     });
     return subscribe;
   }, []);
@@ -19,9 +20,9 @@ function MyApp({ Component, pageProps }: AppProps) {
       <Head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
-      <AuthContext.Provider value={userInfo}>
+      <UserContext.Provider value={{ authState, userState, setUserState }}>
         <Component {...pageProps} />
-      </AuthContext.Provider>
+      </UserContext.Provider>
     </React.Fragment>
   );
 }
