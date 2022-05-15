@@ -25,7 +25,7 @@ function Home() {
     !authState && Router.push("/login");
   }, [authState]);
 
-  //chat 받기
+  //users list 받기
   useEffect(() => {
     const db = getDatabase();
     const dbRef = ref(db, "Users");
@@ -62,7 +62,7 @@ function Home() {
     const myRooms = getMyRooms.val();
 
     // console.log(UserRooms, "UserRooms");
-    // let messageList:string = "no";
+    let messageList: string = "no";
 
     if (myRooms !== null) {
       const arrMyRoomsKey = Object.keys(getMyRooms.val());
@@ -72,14 +72,16 @@ function Home() {
         //해당 사용자와 대화방이 존재하는지 확인
         if (myRooms[arrMyRoomsKey[i]].userListUid === listUserData.uid) {
           const messageListRef = myRooms[arrMyRoomsKey[i]].messageId;
-          // messageList = "yes";
+          messageList = "yes";
           Router.push({
             pathname: "/chat",
             query: `messageId=${messageListRef}`,
           });
-        } else {
-          createUserRoom(listUserData);
         }
+      }
+
+      if (messageList === "no") {
+        createUserRoom(listUserData);
       }
     } else {
       createUserRoom(listUserData);
@@ -158,7 +160,7 @@ function Home() {
   return (
     <React.Fragment>
       <Head>
-        <title>Home - Nextron (with-typescript-emotion)</title>
+        <title>사용자 리스트</title>
       </Head>
       {authState && <LogOut />}
       <Link href="/chatList">
