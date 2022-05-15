@@ -15,6 +15,7 @@ import { UserContext } from "../context/UserContext";
 
 function Home() {
   const { authState, userState } = useContext(UserContext);
+
   const [users, setUsers] = useState([]);
 
   // console.log(users);
@@ -24,7 +25,7 @@ function Home() {
     !authState && Router.push("/login");
   }, [authState]);
 
-  //chat list 받기
+  //chat 받기
   useEffect(() => {
     const db = getDatabase();
     const dbRef = ref(db, "Users");
@@ -160,6 +161,9 @@ function Home() {
         <title>Home - Nextron (with-typescript-emotion)</title>
       </Head>
       {authState && <LogOut />}
+      <Link href="/chatList">
+        <a>채팅목록</a>
+      </Link>
       <Link href="/login">
         <a>로그인</a>
       </Link>
