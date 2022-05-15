@@ -12,6 +12,7 @@ function Home() {
   const [loginPassword, setLoginPassword] = useState("");
   const { userState, setUserState } = useContext(UserContext);
 
+  // console.log(userState, "userState");
   //로그인
   const userLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -28,8 +29,8 @@ function Home() {
 
       const getUserInfo = await get(dbRef);
       const userInfo = getUserInfo.val();
-      // console.log(userInfo.val(), "userInfo");
-      setUserState({
+      // console.log(userInfo, "userInfo");
+      await setUserState({
         uid: userInfo.uid,
         email: userInfo.email,
         nickname: userInfo.nickname,

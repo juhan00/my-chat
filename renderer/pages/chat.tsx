@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useContext } from "react";
+import Router from "next/router";
 import { getDatabase, ref, push, set, onValue } from "firebase/database";
 import { auth } from "../firebase-config";
 import { UserContext } from "../context/UserContext";
@@ -8,34 +9,42 @@ function chat() {
   const [message, setMessage] = useState([]);
   const { userState } = useContext(UserContext);
 
-  //message
+  console.log(Router.query);
+
+  //message 받기
   useEffect(() => {
     const db = getDatabase();
-    const dbRef = ref(db, "Messages/-N1t8AVJvIhBkh85aCGO");
+    const dbRef = ref(db, `Messages/${Router.query.messageId}`);
 
     onValue(dbRef, (snapshot) => {
       const messages = snapshot.val();
-      const arrKey = Object.keys(snapshot.val());
-      const arrMessage = [];
-      for (let i = 0; i < arrKey.length; i++) {
-        arrMessage.push({
-          message: messages[arrKey[i]].message,
-          nickname: messages[arrKey[i]].nickname,
-          timestamp: messages[arrKey[i]].timestamp,
-        });
+      console.log(messages, "key");
+      if (messages !== null) {
+        const arrKey = Object.keys(snapshot.val());
+        const arrMessage = [];
+        for (let i = 0; i < arrKey.length; i++) {
+          arrMessage.push({
+            message: messages[arrKey[i]].message,
+            nickname: messages[arrKey[i]].nickname,
+            timestamp: messages[arrKey[i]].timestamp,
+          });
+        }
+        setMessage(arrMessage);
       }
-      setMessage(arrMessage);
-      console.log(arrMessage);
+
+      // console.log(arrMessage);
     });
   }, []);
 
-  console.log(userState, "chat");
+  // console.log(userState, "chat");
   //message 보내기
   const handleSendMessage = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const db = getDatabase();
 
-    const messageListRef = ref(db, "Messages/-N1t8AVJvIhBkh85aCGO");
+    console.log(userState.uid);
+
+    const db = getDatabase();
+    const messageListRef = ref(db, `Messages/${Router.query.messageId}`);
     const newPostRef = push(messageListRef);
     set(newPostRef, {
       message: sendMessage,
