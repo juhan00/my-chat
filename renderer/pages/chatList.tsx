@@ -45,7 +45,7 @@ function chatList() {
   return (
     <React.Fragment>
       <Head>
-        <title>Home - Nextron (with-typescript-emotion)</title>
+        <title>채팅 리스트</title>
       </Head>
       {authState && <LogOut />}
       <Link href="/login">

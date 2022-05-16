@@ -124,7 +124,7 @@ function Home() {
     // const newPostRef = push(newMessageListRef);
     // await set(newPostRef, {});
 
-    //userRoom 내 리스트에 정보저장
+    //UserRooms 내 리스트에 정보저장
     const myRoomsRef = ref(
       db,
       `UserRooms/${userState.uid}/${newMessageListRef.key}`
@@ -138,12 +138,12 @@ function Home() {
       timestamp: Date.now(),
     });
 
-    //userRoom 대화상대 리스트에 정보저장
+    //UserRooms 대화상대 리스트에 정보저장
     const userRoomsRef = ref(
       db,
       `UserRooms/${listUserData.uid}/${newMessageListRef.key}`
     );
-    console.log(userState, "UserRooms");
+
     // const newPostRef = push(userRoomsRef);
     await set(userRoomsRef, {
       messageId: newMessageListRef.key,
@@ -152,6 +152,10 @@ function Home() {
       userListNickname: userState.nickname,
       timestamp: Date.now(),
     });
+
+    //RoomUsers에 대화상대 리스트 저장
+    const roomUsersRef = ref(db, `RoomUsers/${newMessageListRef.key}`);
+    await set(roomUsersRef, [userState.uid, listUserData.uid]);
 
     Router.push({
       pathname: "/chat",
