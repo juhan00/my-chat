@@ -12,7 +12,6 @@ function Home() {
   const [loginPassword, setLoginPassword] = useState("");
   const { userState, setUserState } = useContext(UserContext);
 
-  // console.log(userState, "userState");
   //로그인
   const userLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -26,25 +25,15 @@ function Home() {
       //user 정보 받아오기
       const db = getDatabase();
       const dbRef = ref(db, `Users/${data.user.uid}`);
-
       const getUserInfo = await get(dbRef);
       const userInfo = getUserInfo.val();
-      // console.log(userInfo, "userInfo");
+
       await setUserState({
         uid: userInfo.uid,
         email: userInfo.email,
         nickname: userInfo.nickname,
       });
-      // onValue(dbRef, (snapshot) => {
-      //   const userInfo = snapshot.val();
-      //   setUserState(userInfo);
-      // });
 
-      // setUserState({uid:data.user.uid, email:data.user.email, nickname:});
-
-      // console.log(data);
-
-      // console.log(data);
       Router.push("/users");
     } catch (error) {
       console.log(error.message);
@@ -79,7 +68,7 @@ function Home() {
         <Link href="/join">
           <a>회원가입</a>
         </Link>
-        <Link href="/home">
+        <Link href="/users">
           <a>홈</a>
         </Link>
 

@@ -2,19 +2,16 @@ import React, { useContext, useEffect, useState } from "react";
 import Head from "next/head";
 import Router from "next/router";
 import Link from "next/link";
-import { getDatabase, ref, onValue, get, set, push } from "firebase/database";
+import { getDatabase, ref, get, onValue, remove } from "firebase/database";
 import LogOut from "../components/LogOut";
 import { UserContext } from "../context/UserContext";
 
 function chatList() {
   const { authState, userState } = useContext(UserContext);
-
   const [chatListState, setChatListState] = useState([]);
 
-  console.log(chatListState);
   //로그인 체크
   useEffect(() => {
-    // console.log(authState, "authState");
     !authState && Router.push("/login");
   }, [authState]);
 
@@ -25,13 +22,15 @@ function chatList() {
 
     onValue(dbRef, (snapshot) => {
       const userList = snapshot.val();
-      const arrKey = Object.keys(snapshot.val());
-      const arrUserList = [];
-      for (let i = 0; i < arrKey.length; i++) {
-        // userList[arrKey[i]].uid !== userState.uid &&
-        arrUserList.push(userList[arrKey[i]]);
+
+      if (userList !== null) {
+        const arrKey = Object.keys(snapshot.val());
+        const arrUserList = [];
+        for (let i = 0; i < arrKey.length; i++) {
+          arrUserList.push(userList[arrKey[i]]);
+        }
+        setChatListState(arrUserList);
       }
-      setChatListState(arrUserList);
     });
   }, []);
 
@@ -40,6 +39,25 @@ function chatList() {
       pathname: "/chat",
       query: `messageId=${messageId}`,
     });
+  };
+
+  const delChatList = async (messageId: string, userListUid: string[]) => {
+    var answer = window.confirm("삭제하시겠습니까?");
+    if (answer) {
+      const db = getDatabase();
+      const messagesRef = ref(db, `Messages/${messageId}`);
+      const roomUsersRef = ref(db, `RoomUsers/${messageId}`);
+      const getRoomUsers = await get(roomUsersRef);
+      const roomUsersData = getRoomUsers.val();
+
+      await remove(messagesRef);
+      await remove(roomUsersRef);
+
+      for (const item of roomUsersData) {
+        const userRoomsRef = ref(db, `UserRooms/${item}/${messageId}`);
+        await remove(userRoomsRef);
+      }
+    }
   };
 
   return (
@@ -54,14 +72,21 @@ function chatList() {
       <Link href="/join">
         <a>회원가입</a>
       </Link>
-      <Link href="/home">
+      <Link href="/users">
         <a>홈</a>
       </Link>
 
       <ul>
         {chatListState?.map((item) => (
-          <li onClick={() => goToChatList(item.messageId)} key={item.messageId}>
-            <p>{item.userListNickname}</p>
+          <li key={item.messageId}>
+            <div onClick={() => goToChatList(item.messageId)}>
+              {item.userListNickname}
+            </div>
+            <button
+              onClick={() => delChatList(item.messageId, item.userListUid)}
+            >
+              삭제
+            </button>
           </li>
         ))}
       </ul>

@@ -3,7 +3,6 @@ import Head from "next/head";
 import Router from "next/router";
 import Link from "next/link";
 import { getDatabase, ref, push, set, onValue } from "firebase/database";
-import { auth } from "../firebase-config";
 import { UserContext } from "../context/UserContext";
 import AddChatList from "../components/AddChatList";
 
@@ -12,8 +11,6 @@ function Chat() {
   const [message, setMessage] = useState([]);
   const { userState } = useContext(UserContext);
 
-  // console.log(Router.query);
-
   // message 받기
   useEffect(() => {
     const db = getDatabase();
@@ -21,7 +18,7 @@ function Chat() {
 
     onValue(dbRef, (snapshot) => {
       const messages = snapshot.val();
-      console.log(messages, "key");
+
       if (messages !== null) {
         const arrKey = Object.keys(snapshot.val());
         const arrMessage = [];
@@ -34,17 +31,12 @@ function Chat() {
         }
         setMessage(arrMessage);
       }
-
-      // console.log(arrMessage);
     });
   }, []);
 
-  // console.log(userState, "chat");
   //message 보내기
   const handleSendMessage = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
-    console.log(userState.uid);
 
     const db = getDatabase();
     const messageListRef = ref(db, `Messages/${Router.query.messageId}`);
@@ -55,27 +47,6 @@ function Chat() {
       uid: userState.uid,
       nickname: userState.nickname,
     });
-
-    console.log("쓰기성공");
-
-    // const postData = {
-    //   message: sendMessage,
-    //   timestamp: Date.now(),
-    //   uid: auth.currentUser.uid,
-    // };
-
-    // try {
-    //   const newPostKey = push(child(ref(db), "Messages")).key;
-
-    //   const updates = {};
-    //   updates[`/Messages/-N1t8AVJvIhBkh85aCGO/${newPostKey}`] = postData;
-
-    //   update(ref(db), updates);
-
-    //   console.log("쓰기성공");
-    // } catch (error) {
-    //   console.log(error);
-    // }
   };
 
   return (
@@ -89,7 +60,7 @@ function Chat() {
       <Link href="/join">
         <a>회원가입</a>
       </Link>
-      <Link href="/home">
+      <Link href="/users">
         <a>홈</a>
       </Link>
       <button type="button" onClick={() => Router.back()}>

@@ -3,25 +3,15 @@ import Head from "next/head";
 import Router from "next/router";
 import Link from "next/link";
 import { getDatabase, ref, onValue, get, set, push } from "firebase/database";
-// import { getDatabase, ref, push, set } from "firebase/database";
-// import { auth } from "../firebase-config";
-// import { BasicCard } from "../components/BasicCard";
-// import { TitleCard } from "../components/TitleCard";
-// import { HoverableCard } from "../components/HoverableCard";
-// import { createUserWithEmailAndPassword } from "firebase/auth";
-// import { auth } from "../firebase-config";
 import LogOut from "../components/LogOut";
 import { UserContext } from "../context/UserContext";
 
 function Home() {
   const { authState, userState } = useContext(UserContext);
-
   const [users, setUsers] = useState([]);
 
-  // console.log(users);
   //로그인 체크
   useEffect(() => {
-    // console.log(authState, "authState");
     !authState && Router.push("/login");
   }, [authState]);
 
@@ -54,21 +44,15 @@ function Home() {
     //내 채팅방 리스트 받아오기
     const db = getDatabase();
     const dbRef = ref(db, `UserRooms/${userState.uid}`);
-
     const getMyRooms = await get(dbRef);
-
-    // const UserRooms = getUserRooms.val();
-    // console.log(UserRooms, "UserRooms");
     const myRooms = getMyRooms.val();
 
-    // console.log(UserRooms, "UserRooms");
     let messageList: boolean = false;
 
     if (myRooms !== null) {
       const arrMyRoomsKey = Object.keys(getMyRooms.val());
 
       for (let i = 0; i < arrMyRoomsKey.length; i++) {
-        console.log(arrMyRoomsKey.length);
         //해당 사용자와 대화방이 존재하는지 확인
         if (myRooms[arrMyRoomsKey[i]].userListUid === listUserData.uid) {
           const messageListRef = myRooms[arrMyRoomsKey[i]].messageId;
@@ -88,28 +72,6 @@ function Home() {
     } else {
       createUserRoom(listUserData);
     }
-
-    // if (UserRooms !== null || !messageList) {
-    //   //일치하는 user가 없을 때
-    //   //message id 생성
-    //   const newMessageListRef = push(ref(db, "Messages"));
-    //   // const newPostRef = push(newMessageListRef);
-    //   // await set(newPostRef, {});
-    //   //userRoom에 정보저장
-    //   const userRoomsRef = ref(db, `UserRooms/${userData.uid}`);
-    //   // const newPostRef = push(userRoomsRef);
-    //   await set(userRoomsRef, {
-    //     userListUid: userData.uid,
-    //     userListNickname: userData.nickname,
-    //     messageId: newMessageListRef.key,
-    //     timestamp: userData.email,
-    //   });
-
-    //   Router.push({
-    //     pathname: "/chat",
-    //     query: `messageId=${newMessageListRef.key}`,
-    //   });
-    // }
   };
 
   // 새 대화방 리스트 생성
@@ -121,15 +83,12 @@ function Home() {
     const db = getDatabase();
     //message id 생성
     const newMessageListRef = push(ref(db, "Messages"));
-    // const newPostRef = push(newMessageListRef);
-    // await set(newPostRef, {});
 
     //UserRooms 내 리스트에 정보저장
     const myRoomsRef = ref(
       db,
       `UserRooms/${userState.uid}/${newMessageListRef.key}`
     );
-    // const newPostRef = push(userRoomsRef);
     await set(myRoomsRef, {
       messageId: newMessageListRef.key,
       roomType: "single",
@@ -144,7 +103,6 @@ function Home() {
       `UserRooms/${listUserData.uid}/${newMessageListRef.key}`
     );
 
-    // const newPostRef = push(userRoomsRef);
     await set(userRoomsRef, {
       messageId: newMessageListRef.key,
       roomType: "single",
@@ -178,7 +136,7 @@ function Home() {
       <Link href="/join">
         <a>회원가입</a>
       </Link>
-      <Link href="/home">
+      <Link href="/users">
         <a>홈</a>
       </Link>
 

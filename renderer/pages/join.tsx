@@ -4,7 +4,7 @@ import Link from "next/link";
 import Router from "next/router";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../firebase-config";
-import { getDatabase, ref, push, set } from "firebase/database";
+import { getDatabase, ref, set } from "firebase/database";
 
 function Home() {
   const [joinEmail, setJoinEmail] = useState("");
@@ -24,10 +24,10 @@ function Home() {
       //firebase Users에 유저정보 등록
       const userUid = data.user.uid;
       const userEmail = data.user.email;
-      const db = getDatabase();
 
+      const db = getDatabase();
       const messageListRef = ref(db, `Users/${userUid}`);
-      // const newPostRef = push(messageListRef);
+
       await set(messageListRef, {
         uid: auth.currentUser.uid,
         email: userEmail,
@@ -35,11 +35,6 @@ function Home() {
       });
 
       Router.push("/users");
-      // console.log(data, "join");
-      // Router.push({
-      //   pathname: "/home",
-      //   query: { userName },
-      // });
     } catch (error) {
       console.log(error.message);
     }
@@ -82,7 +77,7 @@ function Home() {
         <Link href="/join">
           <a>회원가입</a>
         </Link>
-        <Link href="/home">
+        <Link href="/users">
           <a>홈</a>
         </Link>
       </div>
