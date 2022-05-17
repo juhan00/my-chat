@@ -1,44 +1,45 @@
-import React, { useContext, useState } from "react";
-import Head from "next/head";
-import Link from "next/link";
-import Router from "next/router";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../firebase-config";
-import { UserContext } from "../context/UserContext";
-import { getDatabase, ref, get } from "firebase/database";
+import React, { useContext, useState } from 'react'
+import Head from 'next/head'
+import Link from 'next/link'
+import { useRouter } from 'next/router'
+import { signInWithEmailAndPassword } from 'firebase/auth'
+import { auth } from '../firebase-config'
+import { UserContext } from '../context/UserContext'
+import { getDatabase, ref, get } from 'firebase/database'
 
-function Home() {
-  const [loginEmail, setLoginEmail] = useState("");
-  const [loginPassword, setLoginPassword] = useState("");
-  const { userState, setUserState } = useContext(UserContext);
+function Login() {
+  const router = useRouter()
+  const [loginEmail, setLoginEmail] = useState('')
+  const [loginPassword, setLoginPassword] = useState('')
+  const { setUserState } = useContext(UserContext)
 
   //로그인
   const userLogin = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+    e.preventDefault()
     try {
       const data = await signInWithEmailAndPassword(
         auth,
         loginEmail,
         loginPassword
-      );
+      )
 
       //user 정보 받아오기
-      const db = getDatabase();
-      const dbRef = ref(db, `Users/${data.user.uid}`);
-      const getUserInfo = await get(dbRef);
-      const userInfo = getUserInfo.val();
+      const db = getDatabase()
+      const dbRef = ref(db, `Users/${data.user.uid}`)
+      const getUserInfo = await get(dbRef)
+      const userInfo = getUserInfo.val()
 
       await setUserState({
         uid: userInfo.uid,
         email: userInfo.email,
         nickname: userInfo.nickname,
-      });
+      })
 
-      Router.push("/users");
+      router.push('/Users')
     } catch (error) {
-      console.log(error.message);
+      console.log(error.message)
     }
-  };
+  }
   return (
     <React.Fragment>
       <Head>
@@ -49,26 +50,26 @@ function Home() {
           <input
             placeholder="e-mail"
             onChange={(e) => {
-              setLoginEmail(e.target.value);
+              setLoginEmail(e.target.value)
             }}
           />
           <input
             type="password"
             placeholder="password"
             onChange={(e) => {
-              setLoginPassword(e.target.value);
+              setLoginPassword(e.target.value)
             }}
           />
           <button type="submit">로그인</button>
         </form>
 
-        <Link href="/login">
+        <Link href="/Login">
           <a>로그인</a>
         </Link>
-        <Link href="/join">
+        <Link href="/Join">
           <a>회원가입</a>
         </Link>
-        <Link href="/users">
+        <Link href="/Users">
           <a>홈</a>
         </Link>
 
@@ -76,7 +77,7 @@ function Home() {
         {/* <div>{user?.email}</div> */}
       </div>
     </React.Fragment>
-  );
+  )
 }
 
-export default Home;
+export default Login
