@@ -20,10 +20,11 @@ function Chat() {
   const [message, setMessage] = useState([]);
   const [isAddChatList, setIsAddChatList] = useState(false);
   const { userState } = useContext(UserContext);
-  const roomMessageId = Router.query.messageId;
+  const [roomMessageId, setRoomMessageId] = useState(Router.query.messageId);
 
   // message 받기
   useEffect(() => {
+    setMessage([]);
     const db = getDatabase();
     const dbRef = ref(db, `Messages/${roomMessageId}`);
 
@@ -43,7 +44,7 @@ function Chat() {
         setMessage(arrMessage);
       }
     });
-  }, []);
+  }, [roomMessageId]);
 
   //message 보내기
   const handleSendMessage = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -60,7 +61,7 @@ function Chat() {
     });
   };
 
-  async function delChatList(messageId: string | string[]) {
+  async function delChatList() {
     const db = getDatabase();
     //RoomUsers에서 내 uid 삭제
     const roomUsersRef = ref(db, `RoomUsers/${roomMessageId}`);
@@ -120,12 +121,13 @@ function Chat() {
           messageId={roomMessageId}
           isAddChatList={isAddChatList}
           setIsAddChatList={setIsAddChatList}
+          setRoomMessageId={setRoomMessageId}
         />
       )}
       <button onClick={() => setIsAddChatList(!isAddChatList)}>
         사용자 추가
       </button>
-      <button onClick={() => delChatList(roomMessageId)}>대화방 나가기</button>
+      <button onClick={delChatList}>대화방 나가기</button>
 
       {message?.map((item) => (
         <div

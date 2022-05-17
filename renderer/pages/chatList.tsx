@@ -20,7 +20,7 @@ function chatList() {
     const db = getDatabase();
     const dbRef = ref(db, `UserRooms/${userState.uid}`);
 
-    onValue(dbRef, (snapshot) => {
+    onValue(dbRef, async (snapshot) => {
       const userList = snapshot.val();
 
       if (userList !== null) {
@@ -28,6 +28,16 @@ function chatList() {
         const arrUserList = [];
         for (let i = 0; i < arrKey.length; i++) {
           arrUserList.push(userList[arrKey[i]]);
+        }
+
+        for (const item of arrUserList) {
+          const MessagesRef = ref(db, `Messages/${item.messageId}`);
+          const getMessages = await get(MessagesRef);
+          const arrayMessages = getMessages.val();
+          if (arrayMessages) {
+            const lastMessage = arrayMessages[arrayMessages.length - 1];
+            // arrUserList[item].lastMessage.push(lastMessage);
+          }
         }
 
         setChatListState(arrUserList);
@@ -62,7 +72,11 @@ function chatList() {
         {chatListState?.map((item) => (
           <li key={item.messageId}>
             <div onClick={() => goToChatList(item.messageId)}>
-              {item.userListNickname}
+              {Array.isArray(item.userListNickname)
+                ? item.userListNickname.filter(
+                    (item: string) => item !== userState.nickname
+                  )
+                : item.userListNickname}
             </div>
           </li>
         ))}

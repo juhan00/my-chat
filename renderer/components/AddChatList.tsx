@@ -3,6 +3,7 @@ import styled from "@emotion/styled";
 import Router from "next/router";
 import { getDatabase, ref, onValue, get, set, push } from "firebase/database";
 import { UserContext } from "../context/UserContext";
+import { copyFileSync } from "fs";
 
 const AddChatListStyle = styled.div`
   & > ul {
@@ -18,12 +19,14 @@ interface propsType {
   messageId: string | string[];
   isAddChatList: boolean;
   setIsAddChatList: (value: React.SetStateAction<boolean>) => void;
+  setRoomMessageId: (value: React.SetStateAction<string>) => void;
 }
 
 function AddChatList({
   messageId,
   isAddChatList,
   setIsAddChatList,
+  setRoomMessageId,
 }: propsType) {
   const { userState } = useContext(UserContext);
   const [users, setUsers] = useState([]);
@@ -116,6 +119,30 @@ function AddChatList({
       }
     }
 
+    if (!isRoom) {
+      createChatRoom();
+      // setIsAddChatList(!isAddChatList);
+      Router.reload();
+    } else {
+      var dialog = confirm("기존 대화방이 존재합니다. 새로 만들겠습니까?");
+      if (dialog) {
+        createChatRoom();
+        setIsAddChatList(!isAddChatList);
+      } else {
+        console.log(roomMessageId, "roomMessageId");
+        // Router.reload();
+        setRoomMessageId(roomMessageId);
+        setIsAddChatList(!isAddChatList);
+      }
+    }
+  };
+
+  const createChatRoom = async () => {
+    //기존 대화방이 없을 때
+    const db = getDatabase();
+    //message id 생성
+    const newMessageListRef = push(ref(db, "Messages"));
+
     //selectAddUser에 있는 사용자들 닉네임 구하기
     let userNickname = [];
     for (const item of selectAddUser) {
@@ -125,57 +152,28 @@ function AddChatList({
       userNickname.push(getUser.val().nickname);
     }
 
-    if (!isRoom) {
-      //기존 대화방이 없을 때
-      const db = getDatabase();
-      //message id 생성
-      const newMessageListRef = push(ref(db, "Messages"));
+    //selectAddUser에 있는 사용자들 UserRooms 대화상대 리스트에 정보저장
+    selectAddUser.forEach(async (item) => {
+      const userRoomsRef = ref(
+        db,
+        `UserRooms/${item}/${newMessageListRef.key}`
+      );
 
-      //selectAddUser에 있는 사용자들 UserRooms 대화상대 리스트에 정보저장
-      selectAddUser.forEach(async (item) => {
-        const userRoomsRef = ref(
-          db,
-          `UserRooms/${item}/${newMessageListRef.key}`
-        );
-
-        await set(userRoomsRef, {
-          messageId: newMessageListRef.key,
-          roomType: "multi",
-          userListUid: selectAddUser,
-          userListNickname: userNickname,
-          timestamp: Date.now(),
-        });
+      await set(userRoomsRef, {
+        messageId: newMessageListRef.key,
+        roomType: "multi",
+        userListUid: selectAddUser,
+        userListNickname: userNickname,
+        lastMessage: "",
+        timestamp: Date.now(),
       });
+    });
 
-      //RoomUsers에 대화상대 리스트 저장
-      const roomUsersRef = ref(db, `RoomUsers/${newMessageListRef.key}`);
-      await set(roomUsersRef, [...selectAddUser]);
+    //RoomUsers에 대화상대 리스트 저장
+    const roomUsersRef = ref(db, `RoomUsers/${newMessageListRef.key}`);
+    await set(roomUsersRef, [...selectAddUser]);
 
-      setIsAddChatList(!isAddChatList);
-    } else {
-      //기존 대화방이 있을 때
-      const db = getDatabase();
-
-      //selectAddUser에 있는 사용자들 UserRooms 대화상대 리스트에 정보저장
-
-      for (const item of selectAddUser) {
-        const userRoomsRef = ref(db, `UserRooms/${item}/${roomMessageId}`);
-
-        await set(userRoomsRef, {
-          messageId: roomMessageId,
-          roomType: "multi",
-          userListUid: selectAddUser,
-          userListNickname: userNickname,
-          timestamp: Date.now(),
-        });
-
-        //RoomUsers에 대화상대 리스트 저장
-        const roomUsersRef = ref(db, `RoomUsers/${roomMessageId}`);
-        await set(roomUsersRef, [...selectAddUser]);
-      }
-
-      setIsAddChatList(!isAddChatList);
-    }
+    setRoomMessageId(newMessageListRef.key);
   };
 
   return (
