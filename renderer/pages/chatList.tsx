@@ -37,25 +37,6 @@ function chatList() {
           arrUserList.push(userList[arrKey[i]]);
         }
 
-        for (const item of arrUserList) {
-          const MessagesRef = ref(db, `Messages/${item.messageId}`);
-          const getMessages = await get(MessagesRef);
-          const objectMessages = getMessages.val();
-          if (objectMessages !== null) {
-            const arrayMessages = Object.keys(objectMessages);
-            const lastMessagesId = arrayMessages[arrayMessages.length - 1];
-            const lastMessage = objectMessages[lastMessagesId].message;
-
-            console.log(lastMessage);
-            const UserRoomsRef = ref(
-              db,
-              `UserRooms/${userState.uid}/${item.messageId}`
-            );
-
-            await update(UserRoomsRef, { lastMessage: lastMessage });
-          }
-        }
-
         setChatListState(arrUserList);
       }
     });

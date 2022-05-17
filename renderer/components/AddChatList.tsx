@@ -164,7 +164,6 @@ function AddChatList({
         roomType: "multi",
         userListUid: selectAddUser,
         userListNickname: userNickname,
-        lastMessage: "",
         timestamp: Date.now(),
       });
     });
