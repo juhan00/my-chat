@@ -29,36 +29,38 @@ function chatList() {
         for (let i = 0; i < arrKey.length; i++) {
           arrUserList.push(userList[arrKey[i]]);
         }
+        console.log(arrUserList, "arrUserList");
         setChatListState(arrUserList);
       }
     });
   }, []);
 
-  const goToChatList = async (messageId: string) => {
+  const goToChatList = (messageId: string) => {
+    console.log(messageId, "chatList");
     Router.push({
       pathname: "/chat",
       query: `messageId=${messageId}`,
     });
   };
 
-  const delChatList = async (messageId: string, userListUid: string[]) => {
-    var answer = window.confirm("삭제하시겠습니까?");
-    if (answer) {
-      const db = getDatabase();
-      const messagesRef = ref(db, `Messages/${messageId}`);
-      const roomUsersRef = ref(db, `RoomUsers/${messageId}`);
-      const getRoomUsers = await get(roomUsersRef);
-      const roomUsersData = getRoomUsers.val();
+  // const delChatList = async (messageId: string, userListUid: string[]) => {
+  //   var answer = window.confirm("삭제하시겠습니까?");
+  //   if (answer) {
+  //     const db = getDatabase();
+  //     const messagesRef = ref(db, `Messages/${messageId}`);
+  //     const roomUsersRef = ref(db, `RoomUsers/${messageId}`);
+  //     const getRoomUsers = await get(roomUsersRef);
+  //     const roomUsersData = getRoomUsers.val();
 
-      await remove(messagesRef);
-      await remove(roomUsersRef);
+  //     await remove(messagesRef);
+  //     await remove(roomUsersRef);
 
-      for (const item of roomUsersData) {
-        const userRoomsRef = ref(db, `UserRooms/${item}/${messageId}`);
-        await remove(userRoomsRef);
-      }
-    }
-  };
+  //     for (const item of roomUsersData) {
+  //       const userRoomsRef = ref(db, `UserRooms/${item}/${messageId}`);
+  //       await remove(userRoomsRef);
+  //     }
+  //   }
+  // };
 
   return (
     <React.Fragment>
@@ -82,11 +84,11 @@ function chatList() {
             <div onClick={() => goToChatList(item.messageId)}>
               {item.userListNickname}
             </div>
-            <button
+            {/* <button
               onClick={() => delChatList(item.messageId, item.userListUid)}
             >
               삭제
-            </button>
+            </button> */}
           </li>
         ))}
       </ul>

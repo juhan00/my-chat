@@ -16,9 +16,15 @@ const AddChatListStyle = styled.div`
 
 interface propsType {
   messageId: string | string[];
+  isAddChatList: boolean;
+  setIsAddChatList: (value: React.SetStateAction<boolean>) => void;
 }
 
-function AddChatList({ messageId }: propsType) {
+function AddChatList({
+  messageId,
+  isAddChatList,
+  setIsAddChatList,
+}: propsType) {
   const { userState } = useContext(UserContext);
   const [users, setUsers] = useState([]);
   const [roomUsers, setRoomUsers] = useState([]);
@@ -49,8 +55,6 @@ function AddChatList({ messageId }: propsType) {
   }, []);
 
   useEffect(() => {
-    console.log(roomUsers);
-    console.log(selectAddUser);
     if (JSON.stringify(roomUsers) === JSON.stringify(selectAddUser)) {
       setIsAddButton(false);
     } else {
@@ -103,7 +107,7 @@ function AddChatList({ messageId }: propsType) {
       const roomSortUid = RoomUsers[RoomUsersArrKey[i]].sort(
         (a: string, b: string) => (a > b ? 1 : -1)
       );
-      // console.log(roomSortUid, "////", sortSelectAddUserUid);
+
       if (
         JSON.stringify(roomSortUid) === JSON.stringify(sortSelectAddUserUid)
       ) {
@@ -177,31 +181,12 @@ function AddChatList({ messageId }: propsType) {
         pathname: "/chat",
         query: `messageId=${roomMessageId}`,
       });
-      // selectAddUser.forEach(async (item) => {
-      //   const userRoomsRef = ref(db, `UserRooms/${item}/${roomMessageId}`);
-
-      //   await set(userRoomsRef, {
-      //     messageId: roomMessageId,
-      //     roomType: "multi",
-      //     userListUid: selectAddUser,
-      //     userListNickname: userNickname,
-      //     timestamp: Date.now(),
-      //   });
-
-      //   //RoomUsers에 대화상대 리스트 저장
-      //   const roomUsersRef = ref(db, `RoomUsers/${roomMessageId}`);
-      //   await set(roomUsersRef, [...selectAddUser]);
-
-      //   Router.push({
-      //     pathname: "/chat",
-      //     query: `messageId=${roomMessageId}`,
-      //   });
-      // });
     }
   };
 
   return (
     <AddChatListStyle>
+      <button onClick={() => setIsAddChatList(!isAddChatList)}>취소</button>
       {isAddButton ? (
         <button onClick={addChatUser}>추가</button>
       ) : (
@@ -209,7 +194,7 @@ function AddChatList({ messageId }: propsType) {
       )}
       <ul>
         {users?.map((item) =>
-          roomUsers.filter((uid) => item.uid === uid).length === 1 ? (
+          roomUsers?.filter((uid) => item.uid === uid).length === 1 ? (
             <li key={item.uid} className="dim">
               <p>{item.nickname}</p>
             </li>
