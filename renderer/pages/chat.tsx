@@ -94,6 +94,8 @@ function Chat() {
         userListUid: resetUsersUid,
       });
     }
+
+    Router.push("/chatList");
   }
 
   return (

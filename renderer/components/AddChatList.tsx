@@ -151,10 +151,7 @@ function AddChatList({
       const roomUsersRef = ref(db, `RoomUsers/${newMessageListRef.key}`);
       await set(roomUsersRef, [...selectAddUser]);
 
-      Router.push({
-        pathname: "/chat",
-        query: `messageId=${newMessageListRef.key}`,
-      });
+      setIsAddChatList(!isAddChatList);
     } else {
       //기존 대화방이 있을 때
       const db = getDatabase();
@@ -177,10 +174,7 @@ function AddChatList({
         await set(roomUsersRef, [...selectAddUser]);
       }
 
-      Router.push({
-        pathname: "/chat",
-        query: `messageId=${roomMessageId}`,
-      });
+      setIsAddChatList(!isAddChatList);
     }
   };
 
