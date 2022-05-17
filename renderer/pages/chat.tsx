@@ -59,6 +59,8 @@ function Chat() {
       uid: userState.uid,
       nickname: userState.nickname,
     });
+
+    const userRoomsRef = ref(db, `UserRooms/${roomMessageId}`);
   };
 
   async function delChatList() {

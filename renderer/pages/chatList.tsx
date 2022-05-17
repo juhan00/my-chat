@@ -2,7 +2,14 @@ import React, { useContext, useEffect, useState } from "react";
 import Head from "next/head";
 import Router from "next/router";
 import Link from "next/link";
-import { getDatabase, ref, get, onValue, remove } from "firebase/database";
+import {
+  getDatabase,
+  ref,
+  get,
+  onValue,
+  update,
+  remove,
+} from "firebase/database";
 import LogOut from "../components/LogOut";
 import { UserContext } from "../context/UserContext";
 
@@ -33,10 +40,19 @@ function chatList() {
         for (const item of arrUserList) {
           const MessagesRef = ref(db, `Messages/${item.messageId}`);
           const getMessages = await get(MessagesRef);
-          const arrayMessages = getMessages.val();
-          if (arrayMessages) {
-            const lastMessage = arrayMessages[arrayMessages.length - 1];
-            // arrUserList[item].lastMessage.push(lastMessage);
+          const objectMessages = getMessages.val();
+          if (objectMessages !== null) {
+            const arrayMessages = Object.keys(objectMessages);
+            const lastMessagesId = arrayMessages[arrayMessages.length - 1];
+            const lastMessage = objectMessages[lastMessagesId].message;
+
+            console.log(lastMessage);
+            const UserRoomsRef = ref(
+              db,
+              `UserRooms/${userState.uid}/${item.messageId}`
+            );
+
+            await update(UserRoomsRef, { lastMessage: lastMessage });
           }
         }
 
