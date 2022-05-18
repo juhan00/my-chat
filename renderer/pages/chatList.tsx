@@ -58,6 +58,9 @@ function ChatList() {
       <Link href="/Users">
         <a>홈</a>
       </Link>
+      <Link href="/DropOut">
+        <a>탈퇴하기</a>
+      </Link>
 
       <ul>
         {chatListState?.map((item) => (

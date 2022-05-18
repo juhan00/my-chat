@@ -142,6 +142,9 @@ function Users() {
       <Link href="/Users">
         <a>홈</a>
       </Link>
+      <Link href="/DropOut">
+        <a>탈퇴하기</a>
+      </Link>
 
       <ul>
         {users?.map((item) => (
