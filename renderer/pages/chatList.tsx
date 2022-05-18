@@ -1,47 +1,47 @@
-import React, { useContext, useEffect, useState } from 'react'
-import Head from 'next/head'
-import { useRouter } from 'next/router'
-import Link from 'next/link'
-import { getDatabase, ref, onValue } from 'firebase/database'
-import LogOut from '../components/LogOut'
-import { UserContext } from '../context/UserContext'
+import React, { useContext, useEffect, useState } from 'react';
+import Head from 'next/head';
+import { useRouter } from 'next/router';
+import Link from 'next/link';
+import { getDatabase, ref, onValue } from 'firebase/database';
+import LogOut from '../components/LogOut';
+import { UserContext } from '../context/UserContext';
 
 function ChatList() {
-  const router = useRouter()
-  const { authState, userState } = useContext(UserContext)
-  const [chatListState, setChatListState] = useState([])
+  const router = useRouter();
+  const { authState, userState } = useContext(UserContext);
+  const [chatListState, setChatListState] = useState([]);
 
   //로그인 체크
   useEffect(() => {
-    !authState && router.push('/Login')
-  }, [authState, router])
+    !authState && router.push('/Login');
+  }, [authState, router]);
 
   //chat list 받기
   useEffect(() => {
-    const db = getDatabase()
-    const dbRef = ref(db, `UserRooms/${userState.uid}`)
+    const db = getDatabase();
+    const dbRef = ref(db, `UserRooms/${userState.uid}`);
 
     onValue(dbRef, async (snapshot) => {
-      const userList = snapshot.val()
+      const userList = snapshot.val();
 
       if (userList !== null) {
-        const arrKey = Object.keys(snapshot.val())
-        const arrUserList = []
+        const arrKey = Object.keys(snapshot.val());
+        const arrUserList = [];
         for (let i = 0; i < arrKey.length; i++) {
-          arrUserList.push(userList[arrKey[i]])
+          arrUserList.push(userList[arrKey[i]]);
         }
 
-        setChatListState(arrUserList)
+        setChatListState(arrUserList);
       }
-    })
-  }, [userState.uid])
+    });
+  }, [userState.uid]);
 
   const goToChatList = (messageId: string) => {
     router.push({
       pathname: '/Chat',
       query: `messageId=${messageId}`,
-    })
-  }
+    });
+  };
 
   return (
     <React.Fragment>
@@ -69,11 +69,12 @@ function ChatList() {
                   )
                 : item.userListNickname}
             </div>
+            <div>{item.lastMessage}</div>
           </li>
         ))}
       </ul>
     </React.Fragment>
-  )
+  );
 }
 
-export default ChatList
+export default ChatList;
