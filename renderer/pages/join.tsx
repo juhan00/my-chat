@@ -92,6 +92,8 @@ function Join() {
     } catch (error) {
       if (error.code === 'auth/email-already-in-use') {
         setErrorMessage('해당 이메일 사용자가 존재합니다.');
+      } else if (error.code === 'auth/weak-password') {
+        setErrorMessage('비밀번호는 6자리 이상 입력해 주세요.');
       }
       console.log(error.message);
     }
