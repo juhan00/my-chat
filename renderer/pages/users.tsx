@@ -89,12 +89,35 @@ function Users() {
 
     let messageList = false;
 
+    //동일한 멤버가 있는 채팅방이 있는지 확인
+    // for (let i = 0; i < RoomUsersArrKey.length; i++) {
+    //   const roomSortUid = RoomUsers[RoomUsersArrKey[i]].sort(
+    //     (a: string, b: string) => (a > b ? 1 : -1)
+    //   );
+
+    //   if (
+    //     JSON.stringify(roomSortUid) === JSON.stringify(sortSelectAddUserUid)
+    //   ) {
+    //     isRoom = true;
+    //     roomMessageId = RoomUsersArrKey[i];
+    //   }
+    // }
+
     if (myRooms !== null) {
       const arrMyRoomsKey = Object.keys(getMyRooms.val());
 
       for (let i = 0; i < arrMyRoomsKey.length; i++) {
+        const sortMyRoomsUid = myRooms[arrMyRoomsKey[i]].userListUid.sort(
+          (a: string, b: string) => (a > b ? 1 : -1)
+        );
+        const newRoomsUid = [userState.uid, listUserData.uid];
+        const sortNewRoomsUid = newRoomsUid.sort((a: string, b: string) =>
+          a > b ? 1 : -1
+        );
         //해당 사용자와 대화방이 존재하는지 확인
-        if (myRooms[arrMyRoomsKey[i]].userListUid === listUserData.uid) {
+        if (
+          JSON.stringify(sortMyRoomsUid) === JSON.stringify(sortNewRoomsUid)
+        ) {
           const messageListRef = myRooms[arrMyRoomsKey[i]].messageId;
           messageList = true;
           router.push({
@@ -102,12 +125,9 @@ function Users() {
             query: `messageId=${messageListRef}`,
           });
         }
-
-        if (i === arrMyRoomsKey.length - 1) {
-          if (!messageList) {
-            createUserRoom(listUserData);
-          }
-        }
+      }
+      if (!messageList) {
+        createUserRoom(listUserData);
       }
     } else {
       createUserRoom(listUserData);
@@ -132,8 +152,8 @@ function Users() {
     await set(myRoomsRef, {
       messageId: newMessageListRef.key,
       roomType: 'single',
-      userListUid: listUserData.uid,
-      userListNickname: listUserData.nickname,
+      userListUid: [userState.uid, listUserData.uid],
+      userListNickname: [userState.nickname, listUserData.nickname],
       lastMessage: '',
       timestamp: Date.now(),
     });
@@ -147,8 +167,8 @@ function Users() {
     await set(userRoomsRef, {
       messageId: newMessageListRef.key,
       roomType: 'single',
-      userListUid: userState.uid,
-      userListNickname: userState.nickname,
+      userListUid: [userState.uid, listUserData.uid],
+      userListNickname: [userState.nickname, listUserData.nickname],
       lastMessage: '',
       timestamp: Date.now(),
     });

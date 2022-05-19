@@ -32,7 +32,7 @@ const HeaderStyle = styled.div`
       }
       & > h1 {
         margin-left: 0;
-        max-width: 250px;
+        max-width: 200px;
         text-align: center;
         white-space: normal;
         display: -webkit-box;

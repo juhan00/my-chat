@@ -1,6 +1,14 @@
 import React, { useContext, useEffect, useState } from 'react';
 import styled from '@emotion/styled';
-import { getDatabase, ref, onValue, get, set, push } from 'firebase/database';
+import {
+  getDatabase,
+  ref,
+  onValue,
+  get,
+  set,
+  update,
+  push,
+} from 'firebase/database';
 import { UserContext } from '../context/UserContext';
 
 const AddChatListStyle = styled.div`
@@ -163,7 +171,8 @@ function AddChatList({
     }
 
     if (!isRoom) {
-      createChatRoom();
+      // createChatRoom();
+      addRoomChatUser();
       setIsAddChatList(!isAddChatList);
     } else {
       const dialog = confirm('기존 대화방이 존재합니다. 새로 만들겠습니까?');
@@ -178,8 +187,40 @@ function AddChatList({
     }
   };
 
+  //기존 대화방에 user 추가
+  const addRoomChatUser = async () => {
+    const db = getDatabase();
+
+    //selectAddUser에 있는 사용자들 닉네임 구하기
+    const userNickname = [];
+    for (const item of selectAddUser) {
+      const userRef = ref(db, `Users/${item}`);
+      const getUser = await get(userRef);
+
+      userNickname.push(getUser.val().nickname);
+    }
+
+    //selectAddUser에 있는 사용자들 UserRooms 대화상대 리스트에 정보저장
+    selectAddUser.forEach(async (item) => {
+      const userRoomsRef = ref(db, `UserRooms/${item}/${messageId}`);
+
+      await update(userRoomsRef, {
+        lastMessage: '',
+        messageId,
+        roomType: 'multi',
+        userListUid: selectAddUser,
+        userListNickname: userNickname,
+        timestamp: Date.now(),
+      });
+    });
+
+    //RoomUsers에 대화상대 리스트 저장
+    const roomUsersRef = ref(db, `RoomUsers/${messageId}`);
+    await set(roomUsersRef, [...selectAddUser]);
+  };
+
+  //신규 대화방 생성
   const createChatRoom = async () => {
-    //기존 대화방이 없을 때
     const db = getDatabase();
     //message id 생성
     const newMessageListRef = push(ref(db, 'Messages'));
@@ -201,6 +242,7 @@ function AddChatList({
       );
 
       await set(userRoomsRef, {
+        lastMessage: '',
         messageId: newMessageListRef.key,
         roomType: 'multi',
         userListUid: selectAddUser,

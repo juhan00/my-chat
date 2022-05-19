@@ -173,28 +173,24 @@ function Chat() {
       }
     });
 
-    //참여자 닉네임 구하기
+    //참여자 닉네임 가져오기
     const getUsersNicname = async () => {
       const db = getDatabase();
       //RoomUsers에서 참여자 받아오기
-      const roomUsersRef = ref(db, `RoomUsers/${roomMessageId}`);
-      const getRoomUsers = await get(roomUsersRef);
-      const roomUsersUid = getRoomUsers.val();
-
-      const usersNickname: string[] = [];
-      for (const item of roomUsersUid) {
-        const userRef = ref(db, `Users/${item}`);
-        const getUser = await get(userRef);
-
-        usersNickname.push(getUser.val().nickname);
-      }
-
-      setUsersNickname(
-        usersNickname.filter((item: string) => item !== userState.nickname)
+      const UserRommMessageRef = ref(
+        db,
+        `UserRooms/${userState.uid}/${roomMessageId}`
       );
+      const getUserRommMessage = await get(UserRommMessageRef);
+      const userListNickname = getUserRommMessage.val().userListNickname;
+
+      setUsersNickname(userListNickname);
     };
-    getUsersNicname();
-  }, [roomMessageId, userState.nickname]);
+
+    if (!isAddChatList) {
+      getUsersNicname();
+    }
+  }, [roomMessageId, userState.uid, isAddChatList]);
 
   //message 보내기
   const handleSendMessage = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -222,7 +218,6 @@ function Chat() {
     const roomUsersUid = getRoomUsers.val();
 
     for (const item of roomUsersUid) {
-      console.log(`UserRooms/${item}/${roomMessageId}`);
       const userRoomsRef = ref(db, `UserRooms/${item}/${roomMessageId}`);
 
       await update(userRoomsRef, {
@@ -240,36 +235,45 @@ function Chat() {
       const getRoomUsers = await get(roomUsersRef);
       const roomUsersUid = getRoomUsers.val();
 
-      //RoomUsers에서 다른 사용자 삭제
       const resetUsersUid = roomUsersUid.filter(
         (item: string) => item !== userState.uid
       );
       await set(roomUsersRef, { ...resetUsersUid });
 
-      //UserRooms 내 uid에서 대화방 삭제
+      //UserRooms 내 uid에서 대화방 주소
       const UserRoomsRef = ref(
         db,
         `UserRooms/${userState.uid}/${roomMessageId}`
       );
+
+      //현재 대화방 users 정보 가져오기
+      const getUserRooms = await get(UserRoomsRef);
+      const userRooms = getUserRooms.val();
+
+      if (userRooms.userListUid.length > 2) {
+        //대화방 user가 3명 이상
+        const resetUserNickname = userRooms.userListNickname.filter(
+          (item: string) => item !== userState.nickname
+        );
+
+        //현재 대화방 user의 UserRooms에서 내정보 삭제
+        for (const item of userRooms.userListUid) {
+          const UserRoomsRef = ref(db, `UserRooms/${item}/${roomMessageId}`);
+          await update(UserRoomsRef, {
+            userListNickname: resetUserNickname,
+            userListUid: resetUsersUid,
+          });
+        }
+      } else {
+        //대화방 user가 2명 이하면 user의 UserRooms에서 메시지 삭제
+        for (const item of userRooms.userListUid) {
+          const UserRoomsRef = ref(db, `UserRooms/${item}/${roomMessageId}`);
+          await remove(UserRoomsRef);
+        }
+      }
+
+      //UserRooms 내 uid에서 대화방 삭제
       await remove(UserRoomsRef);
-
-      //selectAddUser에 있는 사용자들 닉네임 구하기
-      const usersNickname: string[] = [];
-      for (const item of resetUsersUid) {
-        const userRef = ref(db, `Users/${item}`);
-        const getUser = await get(userRef);
-
-        usersNickname.push(getUser.val().nickname);
-      }
-
-      //현재 대화방 user의 UserRooms에서 삭제
-      for (const item of resetUsersUid) {
-        const UserRoomsRef = ref(db, `UserRooms/${item}/${roomMessageId}`);
-        await update(UserRoomsRef, {
-          userListNickname: usersNickname,
-          userListUid: resetUsersUid,
-        });
-      }
 
       router.push('/ChatList');
     }
@@ -291,7 +295,16 @@ function Chat() {
               setRoomMessageId={setRoomMessageId}
             />
           )}
-          <Header title={usersNickname.join(' ')} type="chat" />
+          <Header
+            title={
+              Array.isArray(usersNickname)
+                ? usersNickname
+                    .filter((item: string) => item !== userState.nickname)
+                    .join(' ')
+                : usersNickname
+            }
+            type="chat"
+          />
 
           <div className="header-btn-wrap">
             <div
