@@ -15,6 +15,7 @@
     "postinstall": "electron-builder install-app-deps"
   },
   "dependencies": {
+    "@mui/icons-material": "^5.8.0",
     "electron-serve": "^1.1.0",
     "electron-store": "^8.0.1",
     "firebase": "^9.8.1"
@@ -29,6 +30,7 @@
     "@typescript-eslint/parser": "^5.24.0",
     "electron": "^18.2.0",
     "electron-builder": "^23.0.3",
+    "emotion-reset": "^3.0.1",
     "eslint": "^8.15.0",
     "eslint-config-next": "^12.1.6",
     "eslint-config-prettier": "^8.5.0",

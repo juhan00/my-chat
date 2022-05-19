@@ -1,10 +1,49 @@
 import React, { useContext, useEffect, useState } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import Link from 'next/link';
+// import Link from 'next/link';
 import { getDatabase, ref, onValue, get, set, push } from 'firebase/database';
-import LogOut from '../components/LogOut';
+// import LogOut from '../components/LogOut';
 import { UserContext } from '../context/UserContext';
+import Header from '../components/Header';
+import Navi from '../components/Navi';
+import styled from '@emotion/styled';
+
+const UsersStyle = styled.div`
+  margin-top: 20px;
+  & > ul {
+    & > li {
+      position: relative;
+      display: flex;
+      align-items: center;
+      width: 100%;
+      height: 74px;
+      .text-wrap {
+        margin-left: 30px;
+        .name {
+          font-size: 20px;
+          color: #000;
+        }
+        .email {
+          margin-top: 5px;
+          font-size: 15px;
+          color: #999;
+        }
+      }
+      button {
+        position: absolute;
+        top: 50%;
+        right: 30px;
+        transform: translateY(-50%);
+        border: 1px solid #e2e2e2;
+        border-radius: 2px;
+        padding: 5px 10px;
+        background-color: #fff;
+        cursor: pointer;
+      }
+    }
+  }
+`;
 
 function Users() {
   const router = useRouter();
@@ -129,31 +168,22 @@ function Users() {
       <Head>
         <title>사용자 리스트</title>
       </Head>
-      {authState && <LogOut />}
-      <Link href="/ChatList">
-        <a>채팅목록</a>
-      </Link>
-      <Link href="/Login">
-        <a>로그인</a>
-      </Link>
-      <Link href="/Join">
-        <a>회원가입</a>
-      </Link>
-      <Link href="/Users">
-        <a>홈</a>
-      </Link>
-      <Link href="/DropOut">
-        <a>탈퇴하기</a>
-      </Link>
-
-      <ul>
-        {users?.map((item) => (
-          <li onClick={() => goToChatList(item)} key={item.uid}>
-            <p>{item.nickname}</p>
-            <p>{item.email}</p>
-          </li>
-        ))}
-      </ul>
+      {/* {authState && <LogOut />} */}
+      <Header title="Users" type="main" />
+      <UsersStyle>
+        <ul>
+          {users?.map((item) => (
+            <li key={item.uid}>
+              <div className="text-wrap">
+                <div className="name">{item.nickname}</div>
+                <div className="email">{item.email}</div>
+              </div>
+              <button onClick={() => goToChatList(item)}>대화하기</button>
+            </li>
+          ))}
+        </ul>
+      </UsersStyle>
+      <Navi />
     </React.Fragment>
   );
 }

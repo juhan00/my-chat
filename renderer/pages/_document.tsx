@@ -1,6 +1,7 @@
-import React from "react";
-import Document, { Html, Head, Main, NextScript } from "next/document";
-import { css, Global } from "@emotion/react";
+import React from 'react';
+import Document, { Html, Head, Main, NextScript } from 'next/document';
+import { css, Global } from '@emotion/react';
+import emotionReset from 'emotion-reset';
 
 class MyDocument extends Document {
   render() {
@@ -11,6 +12,7 @@ class MyDocument extends Document {
         </Head>
         <Global
           styles={css`
+            ${emotionReset}
             html,
             body {
               margin: 0;
@@ -19,10 +21,19 @@ class MyDocument extends Document {
             }
 
             body {
-              padding: 2rem 4rem;
-              background: papayawhip;
+              padding: 90px 0 0;
+              background: #fff;
               font-family: Helvetica, Arial, sans-serif;
               font-size: 24px;
+            }
+            a {
+              text-decoration: none;
+              outline: none;
+              color: #000;
+              &:hover,
+              &:active {
+                text-decoration: none;
+              }
             }
           `}
         />
