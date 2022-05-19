@@ -21,7 +21,6 @@ class MyDocument extends Document {
             }
 
             body {
-              padding: 90px 0 0;
               background: #fff;
               font-family: Helvetica, Arial, sans-serif;
               font-size: 24px;

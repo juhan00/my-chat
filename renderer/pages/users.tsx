@@ -10,7 +10,7 @@ import Navi from '../components/Navi';
 import styled from '@emotion/styled';
 
 const UsersStyle = styled.div`
-  margin-top: 20px;
+  margin-top: 110px;
   & > ul {
     & > li {
       position: relative;
@@ -88,20 +88,6 @@ function Users() {
     const myRooms = getMyRooms.val();
 
     let messageList = false;
-
-    //동일한 멤버가 있는 채팅방이 있는지 확인
-    // for (let i = 0; i < RoomUsersArrKey.length; i++) {
-    //   const roomSortUid = RoomUsers[RoomUsersArrKey[i]].sort(
-    //     (a: string, b: string) => (a > b ? 1 : -1)
-    //   );
-
-    //   if (
-    //     JSON.stringify(roomSortUid) === JSON.stringify(sortSelectAddUserUid)
-    //   ) {
-    //     isRoom = true;
-    //     roomMessageId = RoomUsersArrKey[i];
-    //   }
-    // }
 
     if (myRooms !== null) {
       const arrMyRoomsKey = Object.keys(getMyRooms.val());

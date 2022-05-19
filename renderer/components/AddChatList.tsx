@@ -180,7 +180,6 @@ function AddChatList({
         createChatRoom();
         setIsAddChatList(!isAddChatList);
       } else {
-        // console.log(roomMessageId, 'roomMessageId');
         setRoomMessageId(roomMessageId);
         setIsAddChatList(!isAddChatList);
       }

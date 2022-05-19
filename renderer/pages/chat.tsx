@@ -24,8 +24,8 @@ const ChatStyle = styled.div`
   position: relative;
   width: 100%;
   height: 100%;
-  min-height: calc(100vh - 100px);
-  padding: 30px 20px 100px;
+  min-height: calc(100vh - 70px);
+  padding: 110px 20px 100px;
   box-sizing: border-box;
   background-color: #f0f6fb;
   .header-btn-wrap {

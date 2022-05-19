@@ -1,25 +1,25 @@
-import React from 'react'
-import styled from '@emotion/styled'
-import { useRouter } from 'next/router'
-import { auth } from '../firebase-config'
-import { signOut } from 'firebase/auth'
+import React from 'react';
+import styled from '@emotion/styled';
+import { useRouter } from 'next/router';
+import { auth } from '../firebase-config';
+import { signOut } from 'firebase/auth';
 
-export const LogOutStyle = styled.button``
+export const LogOutStyle = styled.button``;
 
 const LogOut = () => {
-  const router = useRouter()
+  const router = useRouter();
 
   const userLogOut = async () => {
     try {
-      await signOut(auth)
+      await signOut(auth);
 
-      router.push('/Login')
+      router.push('/Login');
     } catch (error) {
-      console.log(error.message)
+      console.log(error.message);
     }
-  }
+  };
 
-  return <LogOutStyle onClick={userLogOut}>로그아웃</LogOutStyle>
-}
+  return <LogOutStyle onClick={userLogOut}>로그아웃</LogOutStyle>;
+};
 
-export default LogOut
+export default LogOut;

@@ -9,7 +9,7 @@ import Navi from '../components/Navi';
 import styled from '@emotion/styled';
 
 const ChatListStyle = styled.div`
-  margin-top: 20px;
+  margin-top: 110px;
   & > ul {
     & > li {
       position: relative;
