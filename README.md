@@ -1,38 +1,15 @@
-<p align="center"><img src="https://i.imgur.com/3UKgyH7.png"></p>
+## 주제
+회원가입, 로그인, 1:1채팅, 그룹채팅 기능이 있는 데스크탑 앱 입니다.
 
-## Usage
-
-### Create an App
-
-```
-# with npx
-$ npx create-nextron-app my-app --example with-typescript-emotion
-
-# with yarn
-$ yarn create nextron-app my-app --example with-typescript-emotion
-
-# with pnpx
-$ pnpx create-nextron-app my-app --example with-typescript-emotion
-```
-
-### Install Dependencies
+### 실행방법
 
 ```
-$ cd my-app
-
-# using yarn or npm
-$ yarn (or `npm install`)
-
-# using pnpm
-$ pnpm install --shamefully-hoist
+1. git clone https://github.com/juhan00/my-chat.git foldername
+2. cd foldername
+3. npm install
+4. npm run dev
 ```
 
-### Use it
+### 사용기술
 
-```
-# development mode
-$ yarn dev (or `npm run dev` or `pnpm run dev`)
-
-# production build
-$ yarn build (or `npm run build` or `pnpm run build`)
-```
+- TypeScript, React.js, nextron.js, firebase, emotion
